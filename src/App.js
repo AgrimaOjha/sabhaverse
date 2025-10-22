@@ -1,32 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
+// Layout Components
 import Layout from './components/layout/Layout';
 
-
+// Pages
 import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
 import SavedPosts from './pages/SavedPosts';
 import LikedComments from './pages/LikedComments';
 
-
+// Auth Components
 import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
 
-
+// Post Components
 import PostDetail from './components/posts/PostDetail';
 import CreatePost from './components/posts/CreatePost';
 
-
+// Debate Components
 import DebateDetail from './components/debates/DebateDetail';
 
-
+// API Services
 import { authService } from './services/api';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
 
-
+// Styles
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './styles/index.css';
