@@ -1,0 +1,298 @@
+
+
+:root {
+
+  --saffron: #FF9933;
+  --chakra-blue: #0000CD;
+  --india-green: #138808;
+  --lotus-pink: #F9A7B0;
+  --sandalwood: #D2B48C;
+  --turmeric: #FFC30B;
+  --peacock-blue: #0F4C81;
+  --clay-red: #B92B27;
+  --henna-brown: #9F5233;
+  --marigold: #FFAA00;
+  --rangoli-purple: #9966CC;
+  --mehendi-green: #2E8B57;
+  --silk-cream: #FFF8DC;
+  --spice-orange: #FF6347;
+  
+  /* Additional vibrant Indian colors */
+  --banyan-green: #50C878;
+  --gulmohar-red: #E32636;
+  --jaipur-pink: #D53E84;
+  --kolam-blue: #5D8AA8;
+  --madhubani-teal: #008080;
+  --nilgiri-violet: #7B68EE;
+  --tulsi-green: #006400;
+  --kesar-yellow: #FFD700;
+  
+
+  --text-dark: #333333;
+  --text-light: #F5F5F5;
+  --background-light: #FFFAF0; 
+  --background-dark: #121212;
+  --border-color: #E0E0E0;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Rozha+One&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+  color: var(--text-dark);
+  background-color: var(--background-light);
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FF9933' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Rozha One', serif;
+  letter-spacing: 0.5px;
+}
+
+
+.indian-border {
+  border: 3px solid var(--saffron);
+  border-radius: 8px;
+  box-shadow: 0 6px 12px rgba(255, 153, 51, 0.2);
+  padding: 20px;
+  background-color: var(--silk-cream);
+  position: relative;
+  overflow: hidden;
+}
+
+.indian-border::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--saffron), var(--india-green), var(--chakra-blue));
+}
+
+.chakra-pattern {
+  background-image: radial-gradient(var(--chakra-blue) 10%, transparent 11%),
+                    radial-gradient(var(--chakra-blue) 10%, transparent 11%);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+  background-repeat: repeat;
+  opacity: 0.1;
+}
+
+.lotus-header {
+  background: linear-gradient(135deg, var(--lotus-pink), var(--rangoli-purple));
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 3px solid var(--saffron);
+  position: relative;
+}
+
+.lotus-header::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  background-color: var(--saffron);
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+}
+
+
+.rangoli-bg {
+  background-color: var(--background-light);
+  background-image: 
+    radial-gradient(var(--marigold) 2px, transparent 2px),
+    radial-gradient(var(--lotus-pink) 2px, transparent 2px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+  background-attachment: fixed;
+  opacity: 0.1;
+}
+
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--peacock-blue), var(--chakra-blue));
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--saffron), var(--spice-orange));
+  transition: all 0.4s ease;
+  z-index: -1;
+}
+
+.btn-primary:hover {
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(15, 76, 129, 0.3);
+}
+
+.btn-primary:hover::before {
+  left: 0;
+}
+
+.btn-secondary {
+  background-color: var(--sandalwood);
+  border: none;
+  color: var(--text-dark);
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--turmeric);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+.sabha-card {
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  background: var(--silk-cream);
+  position: relative;
+}
+
+.sabha-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--saffron), var(--india-green), var(--chakra-blue));
+}
+
+.sabha-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(255, 153, 51, 0.2);
+}
+
+.sabha-card-header {
+  background-color: var(--peacock-blue);
+  color: white;
+  padding: 15px;
+  font-weight: 600;
+}
+
+.sabha-card-body {
+  padding: 20px;
+}
+
+
+.navbar-sabha {
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 10px 0;
+}
+
+.navbar-brand-sabha {
+  color: var(--peacock-blue);
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+
+.debate-thread {
+  border-left: 3px solid var(--saffron);
+  padding-left: 15px;
+  margin-left: 15px;
+}
+
+.proponent-comment {
+  border-left: 3px solid var(--india-green);
+  padding: 10px;
+  margin: 10px 0;
+  background-color: rgba(19, 136, 8, 0.05);
+}
+
+.opponent-comment {
+  border-left: 3px solid var(--clay-red);
+  padding: 10px;
+  margin: 10px 0;
+  background-color: rgba(185, 43, 39, 0.05);
+}
+
+.neutral-comment {
+  border-left: 3px solid var(--chakra-blue);
+  padding: 10px;
+  margin: 10px 0;
+  background-color: rgba(15, 76, 129, 0.05);
+}
+
+
+.footer {
+  background-color: var(--peacock-blue);
+  color: white;
+  padding: 30px 0;
+  margin-top: 50px;
+}
+
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 15px;
+  }
+  
+  .sabha-card {
+    margin-bottom: 15px;
+  }
+}
+
+
+.profile-btn {
+  background: linear-gradient(135deg, #0F4C81 0%, #0b3a63 100%);
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(15, 76, 129, 0.25);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  transition: transform 0.05s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+.profile-btn:hover {
+  box-shadow: 0 6px 16px rgba(15, 76, 129, 0.35);
+  filter: brightness(1.03);
+}
+.profile-btn:active {
+  transform: translateY(1px);
+}
+.profile-btn .name {
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+.profile-btn .bi-person-circle {
+  font-size: 1.2rem;
+}
+
+.dropdown-menu {
+  border-radius: 12px;
+}

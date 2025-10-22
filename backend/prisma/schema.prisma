@@ -1,0 +1,85 @@
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  password      String
+  profileImage  String?
+  bio           String?   @db.Text
+  reputation    Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  posts         Post[]
+  comments      Comment[]
+  debates       Debate[]
+  debateReplies DebateReply[]
+}
+
+model Post {
+  id          String    @id @default(uuid())
+  title       String
+  content     String    @db.Text
+  category    String
+  imageUrl    String?
+  upvotes     Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+  comments    Comment[]
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String   @db.Text
+  upvotes   Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id])
+}
+
+model Debate {
+  id          String        @id @default(uuid())
+  title       String
+  description String        @db.Text
+  category    String
+  imageUrl    String?
+  upvotes     Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  authorId    String
+  author      User          @relation(fields: [authorId], references: [id])
+  replies     DebateReply[]
+}
+
+model DebateReply {
+  id        String     @id @default(uuid())
+  content   String     @db.Text
+  role      Role
+  upvotes   Int        @default(0)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  authorId  String
+  author    User       @relation(fields: [authorId], references: [id])
+  debateId  String
+  debate    Debate     @relation(fields: [debateId], references: [id])
+}
+
+enum Role {
+  PROPONENT
+  OPPONENT
+  NEUTRAL
+}
