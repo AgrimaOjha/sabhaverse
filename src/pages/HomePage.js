@@ -20,38 +20,51 @@ const HomePage = ({ user }) => {
       setActiveTab('home');
     }
   }, [location]);
-  const [posts] = useState([
-    {
-      id: 1,
-      title: 'The Philosophy of Advaita Vedanta',
-      excerpt: 'Exploring the non-dualistic approach to understanding reality and consciousness...',
-      author: 'Adi Shankar',
-      category: 'Philosophy',
-      upvotes: 42,
-      commentCount: 15,
-      createdAt: '2023-06-15'
-    },
-    {
-      id: 2,
-      title: 'Ayurvedic Remedies for Modern Lifestyle',
-      excerpt: 'How ancient Ayurvedic practices can help balance the challenges of contemporary living...',
-      author: 'Charaka',
-      category: 'Ayurveda',
-      upvotes: 38,
-      commentCount: 12,
-      createdAt: '2023-06-12'
-    },
-    {
-      id: 3,
-      title: 'The Evolution of Carnatic Music',
-      excerpt: 'Tracing the historical development of Carnatic music traditions through the centuries...',
-      author: 'Thyagaraja',
+  const [posts, setPosts] = useState([]);
+  
+  useEffect(() => {
+    // Load posts from localStorage if available
+    const savedPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
+    
+    // Combine with default posts
+    const defaultPosts = [
+      {
+        id: 1,
+        title: 'The Philosophy of Advaita Vedanta',
+        excerpt: 'Exploring the non-dualistic approach to understanding reality and consciousness...',
+        author: 'Adi Shankar',
+        category: 'Philosophy',
+        upvotes: 42,
+        commentCount: 15,
+        createdAt: '2023-06-15'
+      },
+      {
+        id: 2,
+        title: 'Ayurvedic Remedies for Modern Lifestyle',
+        excerpt: 'How ancient Ayurvedic practices can help balance the challenges of contemporary living...',
+        author: 'Charaka',
+        category: 'Ayurveda',
+        upvotes: 38,
+        commentCount: 12,
+        createdAt: '2023-06-12'
+      },
+      {
+        id: 3,
+        title: 'The Evolution of Carnatic Music',
+        excerpt: 'Tracing the historical development of Carnatic music traditions through the centuries...',
+        author: 'Thyagaraja',
       category: 'Music',
       upvotes: 35,
       commentCount: 8,
       createdAt: '2023-06-10'
     }
-  ]);
+    ];
+    
+    // Combine saved posts with default posts
+    // Use higher IDs for user posts to avoid conflicts
+    const allPosts = [...defaultPosts, ...savedPosts];
+    setPosts(allPosts);
+  }, []);
 
   // Mock data for featured debate
   const featuredDebate = {

@@ -33,19 +33,44 @@ const CreatePost = ({ user }) => {
     try {
       // Attempt backend post creation if token is available
       const token = localStorage.getItem('token');
+      
+      // Create a new post object
+      const newPost = {
+        id: Date.now(), // Use timestamp as ID
+        title,
+        excerpt: content.substring(0, 120) + '...',
+        content,
+        category,
+        author: user?.name || 'Anonymous User',
+        upvotes: 0,
+        commentCount: 0,
+        createdAt: new Date().toISOString()
+      };
+      
+      // Save to localStorage
+      const savedPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
+      savedPosts.push(newPost);
+      localStorage.setItem('userPosts', JSON.stringify(savedPosts));
+      
       if (token) {
-        const res = await postService.createPost({ title, category, content });
-        setSuccess('Post created successfully');
-        // Navigate to created post if ID returned
-        if (res?.data?.id) {
-          navigate(`/post/${res.data.id}`);
-        } else {
-          // Fallback to home if no id is provided
+        try {
+          const res = await postService.createPost({ title, category, content });
+          setSuccess('Post created successfully');
+          // Navigate to created post if ID returned
+          if (res?.data?.id) {
+            navigate(`/post/${res.data.id}`);
+          } else {
+            // Fallback to home if no id is provided
+            setTimeout(() => navigate('/posts'), 800);
+          }
+        } catch (error) {
+          console.log('API error, but post saved locally:', error);
+          setSuccess('Post saved locally. Backend sync failed.');
           setTimeout(() => navigate('/posts'), 800);
         }
       } else {
         // Frontend-only fallback: show success and navigate
-        setSuccess('Post form submitted (demo). Backend auth required to publish.');
+        setSuccess('Post created successfully (local only).');
         setTimeout(() => navigate('/posts'), 800);
       }
     } catch (err) {

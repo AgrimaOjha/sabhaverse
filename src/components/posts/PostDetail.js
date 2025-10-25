@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { postService, commentService } from '../../services/api';
 
 const PostDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const postId = parseInt(id) || 1;
-  // Mock data for a post - in a real app, this would come from an API
-  const [post] = useState({
+  
+  // Default post data as fallback
+  const defaultPost = {
     id: postId,
     title: 'The Philosophy of Advaita Vedanta',
     content: `
@@ -50,10 +52,66 @@ const PostDetail = () => {
         upvotes: 8
       }
     ]
+  };
+
+  // Normalize any post to ensure required fields exist
+  const normalizePost = (p) => ({
+    ...defaultPost,
+    ...(p || {}),
+    author: (p && p.author) ? p.author : defaultPost.author,
+    category: (p && p.category) ? p.category : defaultPost.category,
+    createdAt: (p && p.createdAt) ? p.createdAt : defaultPost.createdAt,
+    upvotes: typeof (p && p.upvotes) === 'number' ? p.upvotes : 0,
+    comments: Array.isArray(p && p.comments) ? p.comments : [],
+    content: (p && p.content) ? p.content : defaultPost.content,
+    title: (p && p.title) ? p.title : defaultPost.title,
   });
+  
+  // Find the specific post from localStorage or use default
+  const findPostById = (id) => {
+    try {
+      // Try to find in user created posts
+      const userPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
+      const userPost = userPosts.find(p => p.id === id || p.id === postId);
+      if (userPost) return normalizePost(userPost);
+      
+      // If not found, check default posts from HomePage
+      const defaultPosts = [
+        defaultPost,
+        {
+          id: 2,
+          title: 'Understanding Dharma in Modern Context',
+          content: '<p>Exploring dharma today...</p>',
+          author: defaultPost.author,
+          category: defaultPost.category,
+          createdAt: defaultPost.createdAt,
+          upvotes: 0,
+          comments: [],
+        },
+        {
+          id: 3,
+          title: 'The Concept of Karma and Free Will',
+          content: '<p>On karma and free will...</p>',
+          author: defaultPost.author,
+          category: defaultPost.category,
+          createdAt: defaultPost.createdAt,
+          upvotes: 0,
+          comments: [],
+        }
+      ];
+      
+      const foundPost = defaultPosts.find(p => p.id === id || p.id === postId);
+      return normalizePost(foundPost || defaultPost);
+    } catch (error) {
+      console.error('Error finding post:', error);
+      return normalizePost(defaultPost);
+    }
+  };
+  
+  const [post, setPost] = useState(() => findPostById(postId));
 
   const [commentText, setCommentText] = useState('');
-  const [upvotes, setUpvotes] = useState(post.upvotes);
+  const [upvotes, setUpvotes] = useState(Number(post.upvotes || 0));
   const [isSaved, setIsSaved] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('savedPosts') || '[]');
@@ -62,7 +120,7 @@ const PostDetail = () => {
       return false;
     }
   });
-  const [comments, setComments] = useState(post.comments);
+  const [comments, setComments] = useState(Array.isArray(post.comments) ? post.comments : []);
   const [replyOpenIds, setReplyOpenIds] = useState(new Set());
   const [replyTexts, setReplyTexts] = useState({});
   const [hasUpvotedPost, setHasUpvotedPost] = useState(() => {
