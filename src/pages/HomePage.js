@@ -185,7 +185,12 @@ const HomePage = ({ user }) => {
         // Debates View
         <section className="py-5">
           <div className="container">
-            <h2 className="mb-4" style={{ color: 'var(--peacock-blue)' }}>All Debates</h2>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h2 style={{ color: 'var(--peacock-blue)' }}>All Debates</h2>
+              <Link to="/create-debate" className="btn btn-primary">
+                <i className="bi bi-plus-circle me-2"></i>Create Debate
+              </Link>
+            </div>
             <div className="row">
               {debates.map(debate => (
                 <div className="col-md-6 col-lg-4 mb-4" key={debate.id}>

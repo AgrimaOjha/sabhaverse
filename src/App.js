@@ -20,6 +20,7 @@ import CreatePost from './components/posts/CreatePost';
 
 // Debate Components
 import DebateDetail from './components/debates/DebateDetail';
+import CreateDebate from './components/debates/CreateDebate';
 
 // API Services
 import { authService } from './services/api';
@@ -88,6 +89,7 @@ function App() {
           <Route path="/signup" element={<Signup setUser={setUser} />} />
           <Route path="/post/:id" element={<PostDetail />} />
           <Route path="/debate/:id" element={<DebateDetail />} />
+          <Route path="/create-debate" element={<CreateDebate />} />
           <Route path="/create-post" element={<CreatePost user={user} />} />
           <Route path="/posts" element={<HomePage user={user} />} />
           <Route path="/debates" element={<HomePage user={user} />} />

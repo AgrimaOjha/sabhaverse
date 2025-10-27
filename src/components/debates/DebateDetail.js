@@ -5,50 +5,97 @@ import { debateService } from '../../services/api';
 const DebateDetail = () => {
   const { id } = useParams();
   const debateId = parseInt(id) || 1;
-  // Mock data for a debate - in a real app, this would come from an API
-  const [debate] = useState({
-    id: debateId,
-    title: 'Is Yoga primarily spiritual or physical in nature?',
-    description: 'This debate explores the origins and purpose of yoga practices in modern context. Is yoga primarily a spiritual discipline with physical benefits, or has it evolved into a physical practice with spiritual elements?',
-    createdBy: {
-      id: 1,
-      name: 'Patanjali',
-      avatar: 'https://placehold.co/100',
-      reputation: 1850
-    },
-    createdAt: '2023-06-10',
-    category: 'Philosophy',
-    comments: [
-      {
-        id: 1,
-        content: 'Yoga is fundamentally a spiritual practice. The physical postures (asanas) are just one of the eight limbs of yoga as described in Patanjali\'s Yoga Sutras. The ultimate goal is spiritual enlightenment (samadhi), not physical fitness.',
-        author: 'Swami Vivekananda',
-        createdAt: '2023-06-11',
-        role: 'proponent',
-        upvotes: 15
-      },
-      {
-        id: 2,
-        content: 'While yoga has spiritual roots, it has evolved significantly in modern times. Today, many practitioners approach yoga primarily as a physical practice for health and wellness, with the spiritual aspects being secondary or optional.',
-        author: 'Modern Yogi',
-        createdAt: '2023-06-12',
-        role: 'opponent',
-        upvotes: 12
-      },
-      {
-        id: 3,
-        content: 'I believe both perspectives have merit. Yoga\'s origins are undeniably spiritual, but its practice has evolved to accommodate different needs and cultural contexts. Perhaps the physical and spiritual aspects are inseparable, forming a holistic system.',
-        author: 'Balanced View',
-        createdAt: '2023-06-13',
-        role: 'neutral',
-        upvotes: 8
-      }
-    ]
-  });
 
+  // Default debates dataset (mirrors HomePage titles and adds minimal fields)
+  const defaultDebates = [
+    {
+      id: 1,
+      title: 'Is Yoga primarily spiritual or physical in nature?',
+      description: 'Exploring the origins and purpose of yoga practices in modern context',
+      category: 'Philosophy',
+      createdAt: '2023-06-10',
+      createdBy: { id: 1, name: 'Patanjali', avatar: 'https://placehold.co/100', reputation: 1850 },
+      comments: [
+        {
+          id: 1,
+          content: "Yoga is fundamentally a spiritual practice. The physical postures (asanas) are just one of the eight limbs of yoga as described in Patanjali's Yoga Sutras.",
+          author: 'Swami Vivekananda',
+          createdAt: '2023-06-11',
+          role: 'proponent',
+          upvotes: 15
+        },
+        {
+          id: 2,
+          content: 'While yoga has spiritual roots, it has evolved significantly in modern times. Today, many practitioners approach yoga primarily as a physical practice for health and wellness.',
+          author: 'Modern Yogi',
+          createdAt: '2023-06-12',
+          role: 'opponent',
+          upvotes: 12
+        },
+        {
+          id: 3,
+          content: "I believe both perspectives have merit. Yoga's origins are undeniably spiritual, but its practice has evolved to accommodate different needs and cultural contexts.",
+          author: 'Balanced View',
+          createdAt: '2023-06-13',
+          role: 'neutral',
+          upvotes: 8
+        }
+      ]
+    },
+    {
+      id: 2,
+      title: 'Should Sanskrit be made a mandatory language in Indian education?',
+      description: 'Discussing the relevance and importance of Sanskrit in modern education',
+      category: 'Education',
+      createdAt: '2023-06-08',
+      createdBy: { id: 2, name: 'Panini', avatar: 'https://placehold.co/100', reputation: 1320 },
+      comments: []
+    },
+    {
+      id: 3,
+      title: 'Are Vedic mathematics techniques more efficient than conventional methods?',
+      description: 'Comparing traditional Vedic mathematical approaches with modern techniques',
+      category: 'Mathematics',
+      createdAt: '2023-06-05',
+      createdBy: { id: 3, name: 'Bharati Krishna Tirtha', avatar: 'https://placehold.co/100', reputation: 980 },
+      comments: []
+    }
+  ];
+
+  const normalizeDebate = (d) => {
+    const base = {
+      id: debateId,
+      title: 'Debate',
+      description: '',
+      category: 'General',
+      createdAt: new Date().toISOString(),
+      createdBy: { id: 0, name: 'Unknown', avatar: 'https://placehold.co/100', reputation: 0 },
+      comments: []
+    };
+    const merged = { ...base, ...(d || {}) };
+    merged.createdBy = { ...base.createdBy, ...(d?.createdBy || {}) };
+    merged.comments = Array.isArray(d?.comments) ? d.comments : [];
+    return merged;
+  };
+
+  const findDebateById = (lookupId) => {
+    try {
+      const userDebates = JSON.parse(localStorage.getItem('userDebates') || '[]');
+      const fromUser = userDebates.find((deb) => String(deb.id) === String(lookupId));
+      if (fromUser) return normalizeDebate(fromUser);
+      const fromDefault = defaultDebates.find((deb) => String(deb.id) === String(lookupId));
+      return normalizeDebate(fromDefault || defaultDebates[0]);
+    } catch (e) {
+      console.warn('Failed to load debate by id; using default.', e);
+      return normalizeDebate(defaultDebates[0]);
+    }
+  };
+
+  const initialDebate = findDebateById(debateId);
+  const [debate] = useState(initialDebate);
   const [commentText, setCommentText] = useState('');
   const [selectedRole, setSelectedRole] = useState('neutral');
-  const [comments, setComments] = useState(debate.comments);
+  const [comments, setComments] = useState(Array.isArray(initialDebate.comments) ? initialDebate.comments : []);
   const [upvotedReplyIds, setUpvotedReplyIds] = useState(() => {
     try {
       const arr = JSON.parse(localStorage.getItem(`upvotedDebateReplies_${debate.id}`) || '[]');
@@ -60,14 +107,25 @@ const DebateDetail = () => {
   const [replyOpenIds, setReplyOpenIds] = useState(new Set());
   const [replyTexts, setReplyTexts] = useState({});
 
+  // Build dynamic related debates by category (default + user-created)
+  const allDebates = (() => {
+    try {
+      const userDebates = JSON.parse(localStorage.getItem('userDebates') || '[]');
+      return [...defaultDebates, ...userDebates];
+    } catch {
+      return defaultDebates;
+    }
+  })();
+  const relatedDebates = allDebates
+    .filter((d) => d && d.category === debate.category && String(d.id) !== String(debate.id))
+    .slice(0, 5);
+
   const handleUpvoteReply = (replyId) => {
     const key = String(replyId);
     const wasUpvoted = upvotedReplyIds.has(key);
-    // Adjust counts locally
     setComments((prev) => prev.map((c) => (
-      c.id === replyId ? { ...c, upvotes: c.upvotes + (wasUpvoted ? -1 : 1) } : c
+      c.id === replyId ? { ...c, upvotes: (c.upvotes || 0) + (wasUpvoted ? -1 : 1) } : c
     )));
-    // Persist per-debate upvoted set
     setUpvotedReplyIds((prevSet) => {
       const next = new Set(prevSet);
       if (next.has(key)) {
@@ -79,7 +137,6 @@ const DebateDetail = () => {
       return next;
     });
 
-    // Persist global liked comments list for listing page
     try {
       const list = JSON.parse(localStorage.getItem('likedComments') || '[]');
       const target = comments.find((c) => c.id === replyId);
@@ -149,8 +206,36 @@ const DebateDetail = () => {
 
   const handleCommentSubmit = (e) => {
     e.preventDefault();
-    // In a real app, this would send the comment to an API
-    alert(`Comment submitted as ${selectedRole}: ${commentText}`);
+    if (!commentText.trim()) return;
+    
+    const newComment = {
+      id: Date.now(),
+      content: commentText,
+      author: 'You',
+      createdAt: new Date().toISOString(),
+      role: selectedRole,
+      upvotes: 0
+    };
+    
+    setComments(prevComments => [...prevComments, newComment]);
+    
+    // Save to localStorage
+    try {
+      const userDebates = JSON.parse(localStorage.getItem('userDebates') || '[]');
+      const debateIndex = userDebates.findIndex(d => String(d.id) === String(debate.id));
+      
+      if (debateIndex >= 0) {
+        userDebates[debateIndex].comments = [...(userDebates[debateIndex].comments || []), newComment];
+      } else {
+        const updatedDebate = {...debate, comments: [...comments, newComment]};
+        userDebates.push(updatedDebate);
+      }
+      
+      localStorage.setItem('userDebates', JSON.stringify(userDebates));
+    } catch (err) {
+      console.error('Failed to save comment to localStorage', err);
+    }
+    
     setCommentText('');
   };
 
@@ -194,7 +279,7 @@ const DebateDetail = () => {
                 <div className="card-body">
                   <h5 className="card-title" style={{ color: 'var(--india-green)' }}>Proponents</h5>
                   <p className="card-text display-6">
-                    {debate.comments.filter(c => c.role === 'proponent').length}
+                    {comments.filter(c => c.role === 'proponent').length}
                   </p>
                 </div>
               </div>
@@ -204,7 +289,7 @@ const DebateDetail = () => {
                 <div className="card-body">
                   <h5 className="card-title" style={{ color: 'var(--clay-red)' }}>Opponents</h5>
                   <p className="card-text display-6">
-                    {debate.comments.filter(c => c.role === 'opponent').length}
+                    {comments.filter(c => c.role === 'opponent').length}
                   </p>
                 </div>
               </div>
@@ -214,7 +299,7 @@ const DebateDetail = () => {
                 <div className="card-body">
                   <h5 className="card-title" style={{ color: 'var(--chakra-blue)' }}>Neutral</h5>
                   <p className="card-text display-6">
-                    {debate.comments.filter(c => c.role === 'neutral').length}
+                    {comments.filter(c => c.role === 'neutral').length}
                   </p>
                 </div>
               </div>
@@ -224,8 +309,6 @@ const DebateDetail = () => {
           {/* Comments Section */}
           <div className="mb-4">
             <h3 className="mb-4">Debate Responses</h3>
-            
-            {/* Comment Form */}
             <form onSubmit={handleCommentSubmit} className="mb-4 indian-border">
               <div className="mb-3">
                 <label className="form-label">Your stance in this debate:</label>
@@ -358,18 +441,16 @@ const DebateDetail = () => {
           <div className="indian-border">
             <h4 className="lotus-header">Related Debates</h4>
             <div className="list-group list-group-flush">
-              <Link to="/debate/2" className="list-group-item list-group-item-action">
-                <div className="fw-bold">Is Ayurveda compatible with modern medicine?</div>
-                <small className="text-muted">12 participants</small>
-              </Link>
-              <Link to="/debate/3" className="list-group-item list-group-item-action">
-                <div className="fw-bold">Should Sanskrit be mandatory in Indian schools?</div>
-                <small className="text-muted">24 participants</small>
-              </Link>
-              <Link to="/debate/4" className="list-group-item list-group-item-action">
-                <div className="fw-bold">Are ancient Indian mathematical contributions undervalued?</div>
-                <small className="text-muted">18 participants</small>
-              </Link>
+              {relatedDebates.length > 0 ? (
+                relatedDebates.map((d) => (
+                  <Link key={d.id} to={`/debate/${d.id}`} className="list-group-item list-group-item-action">
+                    <div className="fw-bold">{d.title}</div>
+                    <small className="text-muted">{(Array.isArray(d.comments) ? d.comments.length : 0)} responses</small>
+                  </Link>
+                ))
+              ) : (
+                <div className="list-group-item text-muted">No related debates available</div>
+              )}
             </div>
           </div>
         </div>

@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 
 const LikedComments = () => {
   const [liked, setLiked] = useState([]);
-  // Add liked posts section (based on upvoted posts)
   const [likedPosts, setLikedPosts] = useState([]);
   const [upvotedIds, setUpvotedIds] = useState([]);
 
@@ -16,7 +15,6 @@ const LikedComments = () => {
     }
   }, []);
 
-  // Load liked posts from localStorage 'upvotedPosts' and map to post objects
   useEffect(() => {
     try {
       const ids = JSON.parse(localStorage.getItem('upvotedPosts') || '[]');
@@ -95,7 +93,7 @@ const LikedComments = () => {
     }
   };
 
-  // Unlike a liked post (remove from 'upvotedPosts' and state)
+
   const handleUnlikePost = (postId) => {
     try {
       const ids = JSON.parse(localStorage.getItem('upvotedPosts') || '[]');
