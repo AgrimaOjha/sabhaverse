@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../firebase';
+import { authService } from '../../services/api';
 
 const Login = ({ setUser }) => {
   const [email, setEmail] = useState('');
@@ -16,18 +15,12 @@ const Login = ({ setUser }) => {
     setLoading(true);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const fbUser = {
-        uid: userCredential.user.uid,
-        displayName: userCredential.user.displayName || userCredential.user.email,
-        email: userCredential.user.email,
-        photoURL: userCredential.user.photoURL || null,
-      };
-      localStorage.setItem('user', JSON.stringify(fbUser));
-      if (setUser) setUser(fbUser);
+      const response = await authService.login({ email, password });
+      const user = response.data.user;
+      if (setUser) setUser(user);
       navigate('/');
     } catch (error) {
-      setError(error.message || 'Failed to log in. Please check your credentials.');
+      setError(error.response?.data?.message || 'Failed to log in. Please check your credentials.');
       console.error(error);
     } finally {
       setLoading(false);

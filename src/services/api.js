@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+
+const USE_MOCK_API = true;
+const API_URL = USE_MOCK_API ? '' : 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -10,25 +12,87 @@ const api = axios.create({
 });
 
 
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+const mockAuthService = {
+  register: async (userData) => {
 
-// Auth services
-export const authService = {
-  register: (userData) => api.post('/auth/register', userData),
-  login: (credentials) => api.post('/auth/login', credentials),
-  getCurrentUser: () => api.get('/auth/me')
+    const mockResponse = {
+      data: {
+        token: 'mock-jwt-token',
+        user: {
+          id: 'mock-user-id',
+          name: userData.name,
+          email: userData.email
+        }
+      }
+    };
+    
+    localStorage.setItem('token', mockResponse.data.token);
+    localStorage.setItem('user', JSON.stringify(mockResponse.data.user));
+    
+    return mockResponse;
+  },
+  
+  login: async (credentials) => {
+    const mockResponse = {
+      data: {
+        token: 'mock-jwt-token',
+        user: {
+          id: 'mock-user-id',
+          name: credentials.email.split('@')[0],
+          email: credentials.email
+        }
+      }
+    };
+    
+    localStorage.setItem('token', mockResponse.data.token);
+    localStorage.setItem('user', JSON.stringify(mockResponse.data.user));
+    
+    return mockResponse;
+  },
+  
+  getCurrentUser: () => {
+    const user = localStorage.getItem('user');
+    return Promise.resolve({ data: { user: JSON.parse(user) } });
+  },
+  
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  },
+  
+  isAuthenticated: () => {
+    return !!localStorage.getItem('token');
+  }
 };
 
-// Post services
+export const authService = USE_MOCK_API ? mockAuthService : {
+  register: async (userData) => {
+    const response = await api.post('/auth/register', userData);
+    if (response.data && response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
+    return response;
+  },
+  login: async (credentials) => {
+    const response = await api.post('/auth/login', credentials);
+    if (response.data && response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
+    return response;
+  },
+  getCurrentUser: () => api.get('/auth/me'),
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  },
+  isAuthenticated: () => {
+    return !!localStorage.getItem('token');
+  }
+};
+
+
 export const postService = {
   getAllPosts: (page = 1, limit = 10, category, sortBy = 'createdAt', order = 'desc') => 
     api.get('/posts', { params: { page, limit, category, sortBy, order } }),
@@ -39,7 +103,6 @@ export const postService = {
   upvotePost: (id) => api.post(`/posts/${id}/upvote`)
 };
 
-// Comment services
 export const commentService = {
   createComment: (commentData) => api.post('/comments', commentData),
   updateComment: (id, commentData) => api.put(`/comments/${id}`, commentData),
@@ -47,7 +110,6 @@ export const commentService = {
   upvoteComment: (id) => api.post(`/comments/${id}/upvote`),
 };
 
-// Debate services
 export const debateService = {
   getAllDebates: (page = 1, limit = 10, category, sortBy = 'createdAt', order = 'desc') => 
     api.get('/debates', { params: { page, limit, category, sortBy, order } }),

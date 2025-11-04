@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth } from '../../firebase';
+import { authService } from '../../services/api';
 
 const Signup = ({ setUser }) => {
   const [name, setName] = useState('');
@@ -24,22 +23,19 @@ const Signup = ({ setUser }) => {
     setLoading(true);
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, { displayName: name });
-
-      const fbUser = {
-        uid: userCredential.user.uid,
-        displayName: userCredential.user.displayName || name,
-        email: userCredential.user.email,
-        photoURL: userCredential.user.photoURL || null,
-      };
-      localStorage.setItem('user', JSON.stringify(fbUser));
-      if (setUser) setUser(fbUser);
-
+      const response = await authService.register({ name, email, password });
+      const user = response.data.user;
+      if (setUser) setUser(user);
       navigate('/');
     } catch (err) {
-      console.error(err);
-      setError(err.message || 'Failed to create an account.');
+      console.error('Signup error:', err);
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else if (err.message) {
+        setError(err.message);
+      } else {
+        setError('Failed to create an account. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

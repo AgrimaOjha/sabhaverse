@@ -24,8 +24,6 @@ import CreateDebate from './components/debates/CreateDebate';
 
 // API Services
 import { authService } from './services/api';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase';
 
 // Styles
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -37,37 +35,30 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
-      if (fbUser) {
-        const u = {
-          uid: fbUser.uid,
-          displayName: fbUser.displayName || fbUser.email,
-          email: fbUser.email,
-          photoURL: fbUser.photoURL || null,
-        };
-        setUser(u);
-        localStorage.setItem('user', JSON.stringify(u));
-        setLoading(false);
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await authService.getCurrentUser();
+          setUser(response.data.user);
+        } catch (error) {
+          console.error('Error fetching user:', error);
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setUser(null);
+        }
       } else {
-        const token = localStorage.getItem('token');
-        if (token) {
-          try {
-            const response = await authService.getCurrentUser();
-            setUser(response.data);
-          } catch (error) {
-            console.error('Error fetching user:', error);
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            setUser(null);
-          }
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) {
+          setUser(JSON.parse(savedUser));
         } else {
           setUser(null);
         }
-        setLoading(false);
       }
-    });
+      setLoading(false);
+    };
 
-    return () => unsubscribe();
+    checkAuth();
   }, []);
 
   if (loading) {
