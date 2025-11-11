@@ -1,6 +1,6 @@
 const prisma = require('../utils/prisma');
 
-// Get all posts with pagination
+// Get all posts 
 exports.getAllPosts = async (req, res) => {
   try {
     const { page = 1, limit = 10, category, sortBy = 'createdAt', order = 'desc' } = req.query;
@@ -42,7 +42,7 @@ exports.getAllPosts = async (req, res) => {
   }
 };
 
-// Get post by ID
+
 exports.getPostById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -126,8 +126,7 @@ exports.updatePost = async (req, res) => {
     const { id } = req.params;
     const { title, content, category, imageUrl } = req.body;
     const userId = req.user.id;
-    
-    // Check if post exists and belongs to user
+   
     const existingPost = await prisma.post.findUnique({
       where: { id },
       select: { authorId: true }
@@ -172,8 +171,7 @@ exports.deletePost = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
-    
-    // Check if post exists and belongs to user
+
     const existingPost = await prisma.post.findUnique({
       where: { id },
       select: { authorId: true }
@@ -187,12 +185,12 @@ exports.deletePost = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to delete this post' });
     }
     
-    // Delete all comments first
+
     await prisma.comment.deleteMany({
       where: { postId: id }
     });
     
-    // Delete the post
+
     await prisma.post.delete({
       where: { id }
     });
@@ -225,7 +223,7 @@ exports.upvotePost = async (req, res) => {
       }
     });
     
-    // Increase author's reputation
+
     await prisma.user.update({
       where: { id: post.authorId },
       data: {

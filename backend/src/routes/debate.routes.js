@@ -3,11 +3,11 @@ const router = express.Router();
 const debateController = require('../controllers/debate.controller');
 const authMiddleware = require('../middleware/auth.middleware');
 
-// Public routes
+
 router.get('/', debateController.getAllDebates);
 router.get('/:id', debateController.getDebateById);
 
-// Protected routes
+
 router.post('/', authMiddleware, debateController.createDebate);
 router.put('/:id', authMiddleware, debateController.updateDebate);
 router.delete('/:id', authMiddleware, debateController.deleteDebate);

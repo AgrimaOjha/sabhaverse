@@ -1,6 +1,6 @@
 const prisma = require('../utils/prisma');
 
-// Get all debates with pagination
+// Get all debates
 exports.getAllDebates = async (req, res) => {
   try {
     const { page = 1, limit = 10, category, sortBy = 'createdAt', order = 'desc' } = req.query;
@@ -127,7 +127,7 @@ exports.updateDebate = async (req, res) => {
     const { title, description, category, imageUrl } = req.body;
     const userId = req.user.id;
     
-    // Check if debate exists and belongs to user
+
     const existingDebate = await prisma.debate.findUnique({
       where: { id },
       select: { authorId: true }
@@ -173,7 +173,7 @@ exports.deleteDebate = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
     
-    // Check if debate exists and belongs to user
+
     const existingDebate = await prisma.debate.findUnique({
       where: { id },
       select: { authorId: true }
@@ -187,12 +187,12 @@ exports.deleteDebate = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to delete this debate' });
     }
     
-    // Delete all replies first
+
     await prisma.debateReply.deleteMany({
       where: { debateId: id }
     });
     
-    // Delete the debate
+
     await prisma.debate.delete({
       where: { id }
     });
@@ -204,14 +204,14 @@ exports.deleteDebate = async (req, res) => {
   }
 };
 
-// Add a reply to a debate
+
 exports.addReply = async (req, res) => {
   try {
     const { debateId } = req.params;
     const { content, role } = req.body;
     const authorId = req.user.id;
     
-    // Check if debate exists
+
     const debate = await prisma.debate.findUnique({
       where: { id: debateId }
     });
@@ -270,7 +270,7 @@ exports.upvoteDebate = async (req, res) => {
       }
     });
     
-    // Increase author's reputation
+
     await prisma.user.update({
       where: { id: debate.authorId },
       data: {

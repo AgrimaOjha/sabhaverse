@@ -7,7 +7,7 @@ const PostDetail = () => {
   const navigate = useNavigate();
   const postId = parseInt(id) || 1;
   
-  // Default post data as fallback
+
   const defaultPost = {
     id: postId,
     title: 'The Philosophy of Advaita Vedanta',
@@ -54,7 +54,7 @@ const PostDetail = () => {
     ]
   };
 
-  // Normalize any post to ensure required fields exist
+
   const normalizePost = (p) => ({
     ...defaultPost,
     ...(p || {}),
@@ -67,15 +67,14 @@ const PostDetail = () => {
     title: (p && p.title) ? p.title : defaultPost.title,
   });
   
-  // Find the specific post from localStorage or use default
+
   const findPostById = (id) => {
     try {
-      // Try to find in user created posts
+  
       const userPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
       const userPost = userPosts.find(p => p.id === id || p.id === postId);
       if (userPost) return normalizePost(userPost);
-      
-      // If not found, check default posts from HomePage
+
       const defaultPosts = [
         defaultPost,
         {
@@ -189,13 +188,13 @@ const PostDetail = () => {
 
   const handleUpvoteComment = async (commentId) => {
     const wasUpvoted = upvotedCommentIds.has(commentId);
-    // Adjust counts locally
+
     setComments((prev) =>
       prev.map((c) =>
         c.id === commentId ? { ...c, upvotes: c.upvotes + (wasUpvoted ? -1 : 1) } : c
       )
     );
-    // Persist per-post upvoted set
+
     setUpvotedCommentIds((prevSet) => {
       const next = new Set(prevSet);
       if (next.has(commentId)) {
@@ -207,7 +206,7 @@ const PostDetail = () => {
       return next;
     });
 
-    // Persist global liked comments list for listing page
+
     try {
       const list = JSON.parse(localStorage.getItem('likedComments') || '[]');
       const target = comments.find((c) => c.id === commentId);
@@ -232,7 +231,7 @@ const PostDetail = () => {
       console.warn('Failed to persist liked comment globally', e);
     }
 
-    // Call API only on upvote (backend lacks unupvote)
+
     try {
       if (!wasUpvoted) {
         await commentService.upvoteComment(commentId);
@@ -294,7 +293,7 @@ const PostDetail = () => {
     <div className="container py-5">
       <div className="row">
         <div className="col-lg-8">
-          {/* Post Header */}
+  
           <div className="mb-4">
             <div className="d-flex align-items-center mb-2">
               <Link to={`/category/${post.category.toLowerCase()}`} className="badge me-2" style={{ backgroundColor: 'var(--saffron)' }}>
@@ -320,12 +319,12 @@ const PostDetail = () => {
             </div>
           </div>
 
-          {/* Post Content */}
+
           <div className="indian-border mb-4">
             <div className="sabha-card-body" dangerouslySetInnerHTML={{ __html: post.content }}></div>
           </div>
 
-          {/* Post Actions */}
+
           <div className="d-flex justify-content-between align-items-center mb-4">
             <div>
               <button className={`btn ${hasUpvotedPost ? 'btn-primary' : 'btn-outline-primary'} me-2`} onClick={handleUpvotePost}>
@@ -345,11 +344,11 @@ const PostDetail = () => {
             </div>
           </div>
 
-          {/* Comments Section */}
+
           <div className="mb-4">
             <h3 className="mb-4">Comments</h3>
             
-            {/* Comment Form */}
+  
             <form onSubmit={handleCommentSubmit} className="mb-4">
               <div className="mb-3">
                 <textarea 
@@ -364,7 +363,6 @@ const PostDetail = () => {
               <button type="submit" className="btn btn-primary">Post Comment</button>
             </form>
             
-            {/* Comments List */}
             {comments.map(comment => (
               <div key={comment.id} className="indian-border mb-3">
                 <div className="d-flex justify-content-between mb-2">
@@ -398,7 +396,7 @@ const PostDetail = () => {
           </div>
         </div>
         
-        {/* Sidebar */}
+
         <div className="col-lg-4">
           <div className="indian-border mb-4">
             <h4 className="lotus-header">Related Posts</h4>

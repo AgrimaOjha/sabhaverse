@@ -6,7 +6,7 @@ const DebateDetail = () => {
   const { id } = useParams();
   const debateId = parseInt(id) || 1;
 
-  // Default debates dataset (mirrors HomePage titles and adds minimal fields)
+
   const defaultDebates = [
     {
       id: 1,
@@ -272,7 +272,7 @@ const DebateDetail = () => {
             </div>
           </div>
 
-          {/* Debate Stats */}
+  
           <div className="row mb-4">
             <div className="col-md-4 mb-3 mb-md-0">
               <div className="card text-center h-100" style={{ borderColor: 'var(--india-green)' }}>
@@ -306,7 +306,7 @@ const DebateDetail = () => {
             </div>
           </div>
 
-          {/* Comments Section */}
+      
           <div className="mb-4">
             <h3 className="mb-4">Debate Responses</h3>
             <form onSubmit={handleCommentSubmit} className="mb-4 indian-border">
@@ -370,7 +370,7 @@ const DebateDetail = () => {
               <button type="submit" className="btn btn-primary">Submit Response</button>
             </form>
             
-            {/* Comments List */}
+    
             {comments.map(comment => (
               <div 
                 key={comment.id} 
@@ -425,7 +425,7 @@ const DebateDetail = () => {
           </div>
         </div>
         
-        {/* Sidebar */}
+
         <div className="col-lg-4">
           <div className="indian-border mb-4">
             <h4 className="lotus-header">Debate Guidelines</h4>

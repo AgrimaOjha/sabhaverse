@@ -32,7 +32,7 @@ const Login = ({ setUser }) => {
     setLoading(true);
     
     try {
-      // For now, we'll just show an error since we haven't implemented Google auth in our backend
+      
       setError('Google Sign In is not available with our custom backend yet.');
     } catch (error) {
       setError('Failed to sign in with Google.');

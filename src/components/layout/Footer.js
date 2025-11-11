@@ -39,10 +39,10 @@ const Footer = () => {
               <button className="btn" style={{ backgroundColor: '#FF9933', color: 'white' }}>Subscribe</button>
             </div>
             <div className="mt-4">
-              <a href="#" className="text-white me-3"><i className="bi bi-facebook"></i></a>
-              <a href="#" className="text-white me-3"><i className="bi bi-twitter"></i></a>
-              <a href="#" className="text-white me-3"><i className="bi bi-instagram"></i></a>
-              <a href="#" className="text-white"><i className="bi bi-youtube"></i></a>
+              <a href="http" className="text-white me-3"><i className="bi bi-facebook"></i></a>
+              <a href="http" className="text-white me-3"><i className="bi bi-twitter"></i></a>
+              <a href="http" className="text-white me-3"><i className="bi bi-instagram"></i></a>
+              <a href="http" className="text-white"><i className="bi bi-youtube"></i></a>
             </div>
           </div>
         </div>

@@ -40,7 +40,7 @@ const CreateDebate = () => {
       userDebates.push(newDebate);
       localStorage.setItem('userDebates', JSON.stringify(userDebates));
       
-      // Navigate to the newly created debate
+ 
       navigate(`/debate/${newDebate.id}`);
     } catch (err) {
       console.error('Failed to save debate', err);

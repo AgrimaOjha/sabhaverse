@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-// Map categories to colors
+
 const categoryColors = {
   'philosophy': 'var(--rangoli-purple)',
   'ayurveda': 'var(--mehendi-green)',

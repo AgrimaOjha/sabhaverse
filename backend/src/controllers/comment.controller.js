@@ -41,7 +41,7 @@ exports.updateComment = async (req, res) => {
     const { content } = req.body;
     const userId = req.user.id;
     
-    // Check if comment exists and belongs to user
+
     const existingComment = await prisma.comment.findUnique({
       where: { id },
       select: { authorId: true }
@@ -82,7 +82,7 @@ exports.deleteComment = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
     
-    // Check if comment exists and belongs to user
+
     const existingComment = await prisma.comment.findUnique({
       where: { id },
       select: { authorId: true }
@@ -128,7 +128,7 @@ exports.upvoteComment = async (req, res) => {
       }
     });
     
-    // Increase author's reputation
+
     await prisma.user.update({
       where: { id: comment.authorId },
       data: {

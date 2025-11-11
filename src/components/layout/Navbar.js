@@ -5,7 +5,7 @@ import { auth } from '../../firebase';
 
 const Navbar = ({ user }) => {
   const navigate = useNavigate();
-  // Removed local menu state; using Bootstrap collapse for mobile
+
 
   const handleLogout = async () => {
     try {
@@ -18,7 +18,7 @@ const Navbar = ({ user }) => {
     }
   };
 
-  // Using Bootstrap collapse; no custom toggleMenu needed.
+
 
   return (
     <nav className="navbar navbar-expand-md navbar-light bg-white navbar-sabha">
@@ -67,7 +67,7 @@ const Navbar = ({ user }) => {
               <Link className="nav-link" to="/posts">Posts</Link>
             </li>
             <li className="nav-item dropdown">
-              <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <a className="nav-link dropdown-toggle" href="http" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Categories
               </a>
               <ul className="dropdown-menu">
