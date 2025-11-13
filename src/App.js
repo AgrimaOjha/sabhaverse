@@ -40,7 +40,8 @@ function App() {
       if (token) {
         try {
           const response = await authService.getCurrentUser();
-          setUser(response.data.user);
+          // Backend returns the user object directly (not wrapped under `user`)
+          setUser(response.data);
         } catch (error) {
           console.error('Error fetching user:', error);
           localStorage.removeItem('token');

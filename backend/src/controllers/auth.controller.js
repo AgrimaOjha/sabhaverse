@@ -27,6 +27,8 @@ exports.register = async (req, res) => {
         password: hashedPassword
       }
     });
+    console.log("✅ USER CREATED:", user);
+
 
 
     const token = jwt.sign(
@@ -48,6 +50,8 @@ exports.register = async (req, res) => {
     console.error('Register error:', error);
     res.status(500).json({ message: 'Server error' });
   }
+
+
 };
 
 
@@ -119,3 +123,4 @@ exports.getCurrentUser = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+

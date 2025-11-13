@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-
-const USE_MOCK_API = true;
-const API_URL = USE_MOCK_API ? '' : 'http://localhost:5000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -12,60 +10,18 @@ const api = axios.create({
 });
 
 
-const mockAuthService = {
-  register: async (userData) => {
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-    const mockResponse = {
-      data: {
-        token: 'mock-jwt-token',
-        user: {
-          id: 'mock-user-id',
-          name: userData.name,
-          email: userData.email
-        }
-      }
-    };
-    
-    localStorage.setItem('token', mockResponse.data.token);
-    localStorage.setItem('user', JSON.stringify(mockResponse.data.user));
-    
-    return mockResponse;
-  },
-  
-  login: async (credentials) => {
-    const mockResponse = {
-      data: {
-        token: 'mock-jwt-token',
-        user: {
-          id: 'mock-user-id',
-          name: credentials.email.split('@')[0],
-          email: credentials.email
-        }
-      }
-    };
-    
-    localStorage.setItem('token', mockResponse.data.token);
-    localStorage.setItem('user', JSON.stringify(mockResponse.data.user));
-    
-    return mockResponse;
-  },
-  
-  getCurrentUser: () => {
-    const user = localStorage.getItem('user');
-    return Promise.resolve({ data: { user: JSON.parse(user) } });
-  },
-  
-  logout: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-  },
-  
-  isAuthenticated: () => {
-    return !!localStorage.getItem('token');
-  }
-};
-
-export const authService = USE_MOCK_API ? mockAuthService : {
+export const authService = {
   register: async (userData) => {
     const response = await api.post('/auth/register', userData);
     if (response.data && response.data.token) {
