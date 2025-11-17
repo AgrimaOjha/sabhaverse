@@ -24,8 +24,21 @@ const Signup = ({ setUser }) => {
 
     try {
       const response = await authService.register({ name, email, password });
-      const user = response.data.user;
-      if (setUser) setUser(user);
+      console.log('Signup response:', response?.data);
+      console.log('Stored token:', localStorage.getItem('token'));
+      console.log('Stored user (raw):', localStorage.getItem('user'));
+
+      // Fetch current user using token to validate auth and show in Network tab
+      try {
+        const me = await authService.getCurrentUser();
+        console.log('Current user (/auth/me):', me?.data);
+        if (setUser) setUser(me?.data);
+      } catch (meErr) {
+        console.warn('Fetching current user failed, falling back to signup payload:', meErr);
+        const user = response?.data?.user;
+        if (setUser && user) setUser(user);
+      }
+
       navigate('/');
     } catch (err) {
       console.error('Signup error:', err);

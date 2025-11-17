@@ -16,8 +16,21 @@ const Login = ({ setUser }) => {
 
     try {
       const response = await authService.login({ email, password });
-      const user = response.data.user;
-      if (setUser) setUser(user);
+      console.log('Login response:', response?.data);
+      console.log('Stored token:', localStorage.getItem('token'));
+      console.log('Stored user (raw):', localStorage.getItem('user'));
+
+      // Fetch current user using token to validate auth and show in Network tab
+      try {
+        const me = await authService.getCurrentUser();
+        console.log('Current user (/auth/me):', me?.data);
+        if (setUser) setUser(me?.data);
+      } catch (meErr) {
+        console.warn('Fetching current user failed, falling back to login payload:', meErr);
+        const user = response?.data?.user;
+        if (setUser && user) setUser(user);
+      }
+
       navigate('/');
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to log in. Please check your credentials.');

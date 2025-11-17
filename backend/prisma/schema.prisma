@@ -4,7 +4,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -14,7 +14,7 @@ model User {
   email         String        @unique
   password      String
   profileImage  String?
-  bio           String?       @db.Text
+  bio           String?
   reputation    Int           @default(0)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
@@ -27,7 +27,7 @@ model User {
 model Post {
   id        String    @id @default(uuid())
   title     String
-  content   String    @db.Text
+  content   String
   category  String
   imageUrl  String?
   upvotes   Int       @default(0)
@@ -42,7 +42,7 @@ model Post {
 
 model Comment {
   id        String   @id @default(uuid())
-  content   String   @db.Text
+  content   String
   upvotes   Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -58,7 +58,7 @@ model Comment {
 model Debate {
   id          String        @id @default(uuid())
   title       String
-  description String        @db.Text
+  description String
   category    String
   imageUrl    String?
   upvotes     Int           @default(0)
@@ -73,7 +73,7 @@ model Debate {
 
 model DebateReply {
   id        String   @id @default(uuid())
-  content   String   @db.Text
+  content   String
   role      Role
   upvotes   Int      @default(0)
   createdAt DateTime @default(now())
