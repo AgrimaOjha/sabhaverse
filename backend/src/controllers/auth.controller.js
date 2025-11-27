@@ -5,6 +5,7 @@ const prisma = require('../utils/prisma');
 exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    console.log("hey this is my register routes")
 
 
     const existingUser = await prisma.user.findUnique({
@@ -19,7 +20,7 @@ exports.register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create user
+
     const user = await prisma.user.create({
       data: {
         name,
