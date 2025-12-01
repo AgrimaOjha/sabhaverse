@@ -1,80 +1,95 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
-
-const api = axios.create({
-  baseURL: API_URL,
+// Base URL of your backend
+// Make sure your .env has: REACT_APP_API_URL=https://sabhaverse-main.onrender.com
+const API = axios.create({
+  baseURL: process.env.REACT_APP_API_URL, // Do NOT include /api here
   headers: {
-    'Content-Type': 'application/json'
-  }
+    "Content-Type": "application/json",
+  },
 });
 
-
-api.interceptors.request.use(
+// Attach token automatically to requests
+API.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
+// -----------------------------
+// Auth Service
+// -----------------------------
 export const authService = {
   register: async (userData) => {
-    const response = await api.post('/auth/register', userData);
-    if (response.data && response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+    const response = await API.post("/api/auth/register", userData);
+    if (response.data?.token) {
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
     }
     return response;
   },
+
   login: async (credentials) => {
-    const response = await api.post('/auth/login', credentials);
-    if (response.data && response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+    const response = await API.post("/api/auth/login", credentials);
+    if (response.data?.token) {
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
     }
     return response;
   },
-  getCurrentUser: () => api.get('/auth/me'),
+
+  getCurrentUser: () => API.get("/api/auth/me"),
+
   logout: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   },
-  isAuthenticated: () => {
-    return !!localStorage.getItem('token');
-  }
+
+  isAuthenticated: () => !!localStorage.getItem("token"),
 };
 
-
+// -----------------------------
+// Post Service
+// -----------------------------
 export const postService = {
-  getAllPosts: (page = 1, limit = 10, category, sortBy = 'createdAt', order = 'desc') => 
-    api.get('/posts', { params: { page, limit, category, sortBy, order } }),
-  getPostById: (id) => api.get(`/posts/${id}`),
-  createPost: (postData) => api.post('/posts', postData),
-  updatePost: (id, postData) => api.put(`/posts/${id}`, postData),
-  deletePost: (id) => api.delete(`/posts/${id}`),
-  upvotePost: (id) => api.post(`/posts/${id}/upvote`)
+  getAllPosts: (page = 1, limit = 10, category, sortBy = "createdAt", order = "desc") =>
+    API.get("/api/posts", { params: { page, limit, category, sortBy, order } }),
+  
+  getPostById: (id) => API.get(`/api/posts/${id}`),
+  createPost: (postData) => API.post("/api/posts", postData),
+  updatePost: (id, postData) => API.put(`/api/posts/${id}`, postData),
+  deletePost: (id) => API.delete(`/api/posts/${id}`),
+  upvotePost: (id) => API.post(`/api/posts/${id}/upvote`),
 };
 
+// -----------------------------
+// Comment Service
+// -----------------------------
 export const commentService = {
-  createComment: (commentData) => api.post('/comments', commentData),
-  updateComment: (id, commentData) => api.put(`/comments/${id}`, commentData),
-  deleteComment: (id) => api.delete(`/comments/${id}`),
-  upvoteComment: (id) => api.post(`/comments/${id}/upvote`),
+  createComment: (commentData) => API.post("/api/comments", commentData),
+  updateComment: (id, commentData) => API.put(`/api/comments/${id}`, commentData),
+  deleteComment: (id) => API.delete(`/api/comments/${id}`),
+  upvoteComment: (id) => API.post(`/api/comments/${id}/upvote`),
 };
 
+// -----------------------------
+// Debate Service
+// -----------------------------
 export const debateService = {
-  getAllDebates: (page = 1, limit = 10, category, sortBy = 'createdAt', order = 'desc') => 
-    api.get('/debates', { params: { page, limit, category, sortBy, order } }),
-  getDebateById: (id) => api.get(`/debates/${id}`),
-  createDebate: (debateData) => api.post('/debates', debateData),
-  updateDebate: (id, debateData) => api.put(`/debates/${id}`, debateData),
-  deleteDebate: (id) => api.delete(`/debates/${id}`),
-  addReply: (debateId, replyData) => api.post(`/debates/${debateId}/replies`, replyData),
-  upvoteDebate: (id) => api.post(`/debates/${id}/upvote`)
+  getAllDebates: (page = 1, limit = 10, category, sortBy = "createdAt", order = "desc") =>
+    API.get("/api/debates", { params: { page, limit, category, sortBy, order } }),
+  
+  getDebateById: (id) => API.get(`/api/debates/${id}`),
+  createDebate: (debateData) => API.post("/api/debates", debateData),
+  updateDebate: (id, debateData) => API.put(`/api/debates/${id}`, debateData),
+  deleteDebate: (id) => API.delete(`/api/debates/${id}`),
+  addReply: (debateId, replyData) => API.post(`/api/debates/${debateId}/replies`, replyData),
+  upvoteDebate: (id) => API.post(`/api/debates/${id}/upvote`),
 };
 
-export default api;
+export default API;
