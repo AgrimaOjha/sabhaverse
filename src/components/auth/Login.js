@@ -20,7 +20,6 @@ const Login = ({ setUser }) => {
       console.log('Stored token:', localStorage.getItem('token'));
       console.log('Stored user (raw):', localStorage.getItem('user'));
 
-      // Fetch current user using token to validate auth and show in Network tab
       try {
         const me = await authService.getCurrentUser();
         console.log('Current user (/auth/me):', me?.data);

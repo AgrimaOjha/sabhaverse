@@ -10,20 +10,19 @@ const debateRoutes = require('./routes/debate.routes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ---------------------
-// CORS FIX
-// ---------------------
+
 app.use(cors({
-  origin: '*',             // Later add frontend URL
+  origin: [
+    'http://localhost:3001',
+    'https://sabhaverse.vercel.app'
+  ],          
   methods: 'GET,POST,PUT,DELETE',
   allowedHeaders: 'Content-Type, Authorization'
 }));
 
 app.use(express.json());
 
-// ---------------------
-// ROUTES
-// ---------------------
+
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
